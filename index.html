@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Never Grow Old - 生日快乐</title>
+    <title>21岁生日快乐</title>
     <style>
         :root { --theme: #7d9d8d; --text: #4a4a4a; }
         body {
@@ -19,7 +19,7 @@
             max-width: 350px; width: 85%; transition: all 0.8s ease;
         }
 
-        .album-box { position: relative; width: 200px; height: 200px; margin: 0 auto 25px; }
+        .album-box { position: relative; width: 220px; height: 220px; margin: 0 auto 30px; }
         .album-art {
             width: 100%; height: 100%; border-radius: 50%;
             border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
@@ -30,44 +30,42 @@
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .playing .album-art { animation: rotate 15s linear infinite; }
 
-        .hint { color: var(--theme); font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; }
-        h1 { font-size: 1.4rem; margin: 5px 0; letter-spacing: 1px; }
-        .artist { font-size: 0.9rem; color: #999; margin-bottom: 25px; }
+        .hint { color: var(--theme); font-weight: bold; margin-bottom: 20px; font-size: 1.1rem; }
+        h1 { font-size: 1.6rem; margin: 10px 0 30px 0; color: #333; }
 
         .gift-btn {
-            display: inline-block; padding: 14px 28px;
+            display: inline-block; padding: 16px 24px;
             background: var(--theme); color: white; border-radius: 50px;
-            text-decoration: none; font-weight: bold; font-size: 0.9rem;
+            text-decoration: none; font-weight: bold; font-size: 0.95rem;
             box-shadow: 0 8px 15px rgba(125,157,141,0.3);
             transition: 0.3s;
         }
         .gift-btn:hover { transform: translateY(-2px); background: #6b8a7b; }
 
-        .music-note { position: absolute; opacity: 0; pointer-events: none; }
+        .music-note { position: absolute; opacity: 0; pointer-events: none; font-size: 24px; }
         .playing .music-note { animation: float 3s infinite linear; opacity: 0.6; }
         @keyframes float {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
             50% { opacity: 0.6; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body onclick="startExperience()">
 
     <div class="card" id="mainCard">
-        <div id="statusText" class="hint">✨ 别点我 ✨</div>
+        <div id="statusText" class="hint">✨ 单击播放音乐 ✨</div>
         
         <div class="album-box">
             <div class="album-art">
-                <img src="https://y.qq.com/music/photo_new/T002R300x300M000003NlT9I3Fid8m_1.jpg" alt="Never Grow Old">
+                <img src="https://y.qq.com/music/photo_new/T002R300x300M000003NlT9I3Fid8m_1.jpg" alt="Gift">
             </div>
         </div>
 
-        <h1>Never Grow Old</h1>
-        <div class="artist">The Cranberries</div>
+        <h1>21岁生日快乐！</h1>
 
         <a href="https://radio.garden/visit/taipei/EJ081eH6" target="_blank" class="gift-btn" onclick="event.stopPropagation()">
-            🎁 开启全球电台之旅
+            🎁 送你个能看全球所有电台的网站
         </a>
     </div>
 
@@ -82,25 +80,26 @@
                 var audio = document.getElementById('bgMusic');
                 audio.play().then(() => {
                     document.getElementById('mainCard').classList.add('playing');
-                    document.getElementById('statusText').innerText = "🎂 被你发现啦！生日快乐！";
+                    document.getElementById('statusText').innerText = "🎂 Happy 21st Birthday!";
                     document.getElementById('statusText').style.color = "#e84393";
                     isPlaying = true;
                     createNotes();
                 }).catch(e => {
-                    alert("提示：请确保【别点我.mp3】和网页放在同一个文件夹里再打开哦！");
+                    alert("请确保【别点我.mp3】文件和本网页在同一个文件夹里哦！");
                 });
             }
         }
 
         function createNotes() {
+            const symbols = ['♪', '♫', '✨', '💖'];
             for(let i=0; i<8; i++) {
                 let note = document.createElement('div');
                 note.className = 'music-note';
-                note.innerText = '♪';
+                note.innerText = symbols[Math.floor(Math.random() * symbols.length)];
                 note.style.left = Math.random() * 80 + 10 + '%';
-                note.style.bottom = '10%';
+                note.style.bottom = '15%';
                 note.style.animationDelay = (Math.random() * 3) + 's';
-                note.style.color = '#7d9d8d';
+                note.style.color = i % 2 === 0 ? '#7d9d8d' : '#e84393';
                 document.body.appendChild(note);
             }
         }
