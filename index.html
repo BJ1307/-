@@ -3,154 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>21岁生日快乐</title>
+    <title>Happy 21st Birthday</title>
     <style>
-        :root { --theme: #7d9d8d; --text: #4a4a4a; }
-        body {
-            margin: 0; height: 100vh; display: flex; 
-            justify-content: center; align-items: center;
-            background-color: #f4f1ea; font-family: "PingFang SC", "STHeiti", sans-serif;
-            cursor: pointer; overflow: hidden; color: var(--text);
+        /* --- 极简配色与全局设置 --- */
+        :root {
+            --bg-color: #fdfbf7; /* 温暖的奶油白背景 */
+            --card-bg: #ffffff;
+            --accent-color: #8da399; /* 莫兰迪绿，更高级 */
+            --text-main: #2c3e50;
+            --text-sub: #95a5a6;
+            --btn-shadow: rgba(141, 163, 153, 0.4);
         }
 
-        /* 第一页：引导页样式 */
-        #guide-page {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        body {
+            margin: 0;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 100;
-            background-color: #f4f1ea;
-            transition: opacity 1s ease;
-        }
-        .guide-text {
-            font-size: 1.2rem;
-            color: var(--theme);
-            letter-spacing: 2px;
-            animation: breathe 2s infinite ease-in-out;
-        }
-        @keyframes breathe {
-            0%, 100% { opacity: 0.5; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1); }
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif;
+            color: var(--text-main);
+            overflow: hidden;
+            /* 增加一点极其微弱的噪点纹理，提升质感（可选） */
+            background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* 第二页：生日卡片样式（初始隐藏） */
-        .card {
-            text-align: center; background: white; padding: 40px;
-            border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-            max-width: 350px; width: 85%; 
-            opacity: 0; transform: translateY(20px);
-            transition: all 1s ease;
-            pointer-events: none; /* 未开启前不可点击 */
+        /* --- 第一页：呼吸引导页 --- */
+        #guide-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: var(--bg-color);
+            z-index: 999;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        /* 激活状态 */
-        .card.active {
+
+        .guide-text {
+            font-size: 1rem;
+            letter-spacing: 4px; /* 宽字间距，显高级 */
+            color: var(--text-sub);
+            text-transform: uppercase;
+            animation: pulse 3s infinite ease-in-out;
+            font-weight: 300;
+        }
+
+        .guide-sub {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #b2bec3;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* --- 第二页：主卡片 --- */
+        .card-container {
+            position: relative;
+            background: var(--card-bg);
+            padding: 50px 40px;
+            border-radius: 40px; /* 超大圆角 */
+            /* 极简风的核心：多层柔和阴影 */
+            box-shadow: 
+                0 20px 40px -10px rgba(0,0,0,0.05),
+                0 0 100px -20px rgba(141, 163, 153, 0.1);
+            text-align: center;
+            max-width: 320px;
+            width: 80%;
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性动效 */
+            pointer-events: none;
+        }
+
+        .card-container.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
             pointer-events: auto;
         }
 
-        .album-box { position: relative; width: 220px; height: 220px; margin: 0 auto 30px; }
-        .album-art {
-            width: 100%; height: 100%; border-radius: 50%;
-            border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            overflow: hidden; background: #eee; transition: 1s;
+        /* 唱片封面 */
+        .vinyl-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px; /* 增加留白 */
         }
-        .album-art img { width: 100%; height: 100%; object-fit: cover; }
         
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .playing .album-art { animation: rotate 15s linear infinite; }
-
-        .hint { color: var(--theme); font-weight: bold; margin-bottom: 20px; font-size: 1.1rem; }
-        h1 { font-size: 1.6rem; margin: 10px 0 30px 0; color: #333; }
-
-        .gift-btn {
-            display: inline-block; padding: 16px 24px;
-            background: var(--theme); color: white; border-radius: 50px;
-            text-decoration: none; font-weight: bold; font-size: 0.95rem;
-            box-shadow: 0 8px 15px rgba(125,157,141,0.3);
-            transition: 0.3s;
+        .vinyl {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            /* 封面阴影 */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transition: transform 1s;
         }
-        .gift-btn:hover { transform: translateY(-2px); background: #6b8a7b; }
+        
+        /* 播放时的旋转动画 */
+        .playing .vinyl {
+            animation: spin 20s linear infinite;
+        }
 
-        .music-note { position: absolute; opacity: 0; pointer-events: none; font-size: 24px; z-index: 10; }
-        .playing .music-note { animation: float 3s infinite linear; opacity: 0.6; }
-        @keyframes float {
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* 文字排版 */
+        h1 {
+            font-weight: 300; /* 细字体更优雅 */
+            font-size: 1.8rem;
+            margin: 0 0 10px;
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: #e6a4b4; /* 柔和的脏粉色 */
+            font-weight: 600;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+            min-height: 1.2em;
+        }
+
+        /* 极简按钮 */
+        .btn {
+            display: block;
+            background-color: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            padding: 18px 0;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px var(--btn-shadow);
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px var(--btn-shadow);
+            background-color: #7d938a;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        /* 漂浮音符 */
+        .note {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .playing .note { animation: floatUp 4s linear forwards; }
+
+        @keyframes floatUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.6; }
-            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(45deg); opacity: 0; }
         }
     </style>
 </head>
-<body onclick="startExperience()">
+<body onclick="init()">
 
-    <div id="guide-page">
-        <div class="guide-text">请打开声音</div>
-        <div class="guide-text" style="margin-top: 10px; font-size: 0.9rem;">并单击屏幕开启</div>
+    <div id="guide-layer">
+        <div class="guide-text">Turn on Sound</div>
+        <div class="guide-sub">Tap anywhere to start</div>
     </div>
 
-    <div class="card" id="mainCard">
-        <div id="statusText" class="hint">🎂 Happy 21st Birthday!</div>
-        
-        <div class="album-box">
-            <div class="album-art">
-                <img src="https://y.qq.com/music/photo_new/T002R300x300M000003NlT9I3Fid8m_1.jpg" alt="Gift">
-            </div>
+    <div class="card-container" id="card">
+        <div class="vinyl-wrapper">
+            <img src="https://y.qq.com/music/photo_new/T002R300x300M000003NlT9I3Fid8m_1.jpg" class="vinyl" alt="Cover">
         </div>
 
-        <h1>21岁生日快乐！</h1>
+        <div class="status-text" id="status">Happy 21st Birthday</div>
+        <h1>21岁 生日快乐</h1>
 
-        <a href="https://radio.garden/visit/taipei/EJ081eH6" target="_blank" class="gift-btn" onclick="event.stopPropagation()">
-            🎁 送你个能看全球所有电台的网站
+        <a href="https://radio.garden/listen/hits/ht39osWT" target="_blank" class="btn" onclick="event.stopPropagation()">
+            探索全球电台 🎁
         </a>
     </div>
 
-    <audio id="bgMusic" loop>
+    <audio id="bgm" loop>
         <source src="别点我.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        var isStarted = false;
-        function startExperience() {
-            if (!isStarted) {
-                var audio = document.getElementById('bgMusic');
-                var guide = document.getElementById('guide-page');
-                var card = document.getElementById('mainCard');
+        let started = false;
 
-                // 播放音乐
-                audio.play().then(() => {
-                    // 隐藏引导页
-                    guide.style.opacity = '0';
-                    setTimeout(() => { guide.style.display = 'none'; }, 1000);
+        function init() {
+            if (started) return;
 
-                    // 显示卡片
-                    card.classList.add('active');
+            const bgm = document.getElementById('bgm');
+            const guide = document.getElementById('guide-layer');
+            const card = document.getElementById('card');
+            const status = document.getElementById('status');
+
+            bgm.play().then(() => {
+                started = true;
+                
+                // 1. 隐藏引导页
+                guide.style.opacity = 0;
+                setTimeout(() => guide.remove(), 1200);
+
+                // 2. 显示卡片 (加一点延迟，更有仪式感)
+                setTimeout(() => {
+                    card.classList.add('visible');
                     card.classList.add('playing');
                     
-                    isStarted = true;
-                    createNotes();
-                }).catch(e => {
-                    alert("请确保文件夹中有【别点我.mp3】并已经解压哦！");
-                });
-            }
+                    // 动态文字打字机效果（可选，或者直接显示）
+                    status.innerText = "Making a wish...";
+                    setTimeout(() => {
+                        status.innerText = "✨ Best Wishes for You ✨";
+                    }, 2000);
+                    
+                    spawnNotes();
+                }, 300);
+
+            }).catch(() => {
+                alert("请检查文件夹内是否有【别点我.mp3】文件");
+            });
         }
 
-        function createNotes() {
-            const symbols = ['♪', '♫', '✨', '💖'];
-            for(let i=0; i<10; i++) {
-                let note = document.createElement('div');
-                note.className = 'music-note';
+        // 生成飘动的音符
+        function spawnNotes() {
+            if(!started) return;
+            const container = document.body;
+            const symbols = ['♪', '♫', '✨'];
+            
+            // 每隔0.8秒生成一个音符
+            setInterval(() => {
+                const note = document.createElement('div');
+                note.classList.add('note');
                 note.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                note.style.left = Math.random() * 80 + 10 + '%';
-                note.style.bottom = '15%';
-                note.style.animationDelay = (Math.random() * 5) + 's';
-                note.style.color = i % 2 === 0 ? '#7d9d8d' : '#e84393';
-                document.body.appendChild(note);
-            }
+                
+                // 随机位置和颜色
+                const left = 10 + Math.random() * 80;
+                note.style.left = `${left}%`;
+                note.style.bottom = '20%';
+                note.style.color = Math.random() > 0.5 ? '#8da399' : '#e6a4b4';
+                
+                container.appendChild(note);
+                
+                // 动画结束后移除元素
+                setTimeout(() => note.remove(), 4000);
+            }, 800);
         }
     </script>
 </body>
