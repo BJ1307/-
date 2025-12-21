@@ -12,11 +12,46 @@
             background-color: #f4f1ea; font-family: "PingFang SC", "STHeiti", sans-serif;
             cursor: pointer; overflow: hidden; color: var(--text);
         }
-        
+
+        /* 第一页：引导页样式 */
+        #guide-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            background-color: #f4f1ea;
+            transition: opacity 1s ease;
+        }
+        .guide-text {
+            font-size: 1.2rem;
+            color: var(--theme);
+            letter-spacing: 2px;
+            animation: breathe 2s infinite ease-in-out;
+        }
+        @keyframes breathe {
+            0%, 100% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* 第二页：生日卡片样式（初始隐藏） */
         .card {
             text-align: center; background: white; padding: 40px;
             border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-            max-width: 350px; width: 85%; transition: all 0.8s ease;
+            max-width: 350px; width: 85%; 
+            opacity: 0; transform: translateY(20px);
+            transition: all 1s ease;
+            pointer-events: none; /* 未开启前不可点击 */
+        }
+        
+        /* 激活状态 */
+        .card.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
         }
 
         .album-box { position: relative; width: 220px; height: 220px; margin: 0 auto 30px; }
@@ -42,7 +77,7 @@
         }
         .gift-btn:hover { transform: translateY(-2px); background: #6b8a7b; }
 
-        .music-note { position: absolute; opacity: 0; pointer-events: none; font-size: 24px; }
+        .music-note { position: absolute; opacity: 0; pointer-events: none; font-size: 24px; z-index: 10; }
         .playing .music-note { animation: float 3s infinite linear; opacity: 0.6; }
         @keyframes float {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
@@ -53,8 +88,13 @@
 </head>
 <body onclick="startExperience()">
 
+    <div id="guide-page">
+        <div class="guide-text">请打开声音</div>
+        <div class="guide-text" style="margin-top: 10px; font-size: 0.9rem;">并单击屏幕开启</div>
+    </div>
+
     <div class="card" id="mainCard">
-        <div id="statusText" class="hint">✨ 单击播放音乐 ✨</div>
+        <div id="statusText" class="hint">🎂 Happy 21st Birthday!</div>
         
         <div class="album-box">
             <div class="album-art">
@@ -74,31 +114,40 @@
     </audio>
 
     <script>
-        var isPlaying = false;
+        var isStarted = false;
         function startExperience() {
-            if (!isPlaying) {
+            if (!isStarted) {
                 var audio = document.getElementById('bgMusic');
+                var guide = document.getElementById('guide-page');
+                var card = document.getElementById('mainCard');
+
+                // 播放音乐
                 audio.play().then(() => {
-                    document.getElementById('mainCard').classList.add('playing');
-                    document.getElementById('statusText').innerText = "🎂 Happy 21st Birthday!";
-                    document.getElementById('statusText').style.color = "#e84393";
-                    isPlaying = true;
+                    // 隐藏引导页
+                    guide.style.opacity = '0';
+                    setTimeout(() => { guide.style.display = 'none'; }, 1000);
+
+                    // 显示卡片
+                    card.classList.add('active');
+                    card.classList.add('playing');
+                    
+                    isStarted = true;
                     createNotes();
                 }).catch(e => {
-                    alert("请确保【别点我.mp3】文件和本网页在同一个文件夹里哦！");
+                    alert("请确保文件夹中有【别点我.mp3】并已经解压哦！");
                 });
             }
         }
 
         function createNotes() {
             const symbols = ['♪', '♫', '✨', '💖'];
-            for(let i=0; i<8; i++) {
+            for(let i=0; i<10; i++) {
                 let note = document.createElement('div');
                 note.className = 'music-note';
                 note.innerText = symbols[Math.floor(Math.random() * symbols.length)];
                 note.style.left = Math.random() * 80 + 10 + '%';
                 note.style.bottom = '15%';
-                note.style.animationDelay = (Math.random() * 3) + 's';
+                note.style.animationDelay = (Math.random() * 5) + 's';
                 note.style.color = i % 2 === 0 ? '#7d9d8d' : '#e84393';
                 document.body.appendChild(note);
             }
